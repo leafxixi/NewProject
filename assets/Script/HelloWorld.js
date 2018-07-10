@@ -1,10 +1,5 @@
-var gesture = require("gesture");
-
-function Point(x, y) // constructor
-{
-    this.X = x;
-    this.Y = y;
-}
+var DollarRecognizer = require("gesture");
+var gesture = new DollarRecognizer();
 
 cc.Class({
     extends: cc.Component,
@@ -16,12 +11,13 @@ cc.Class({
         },
         // defaults, set visually when attaching this script to the Canvas
         text: 'Hello, World!'
+
     },
     //事件监听
     setEventControl: function(){
         var self = this;
         var _isDown = false;
-        var _points = new Array();
+		// var _points = new Array();
         cc.eventManager.addListener({
         event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
@@ -31,10 +27,12 @@ cc.Class({
                 var target = event.getCurrentTarget();
                 // 获取事件所绑定的 target
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
-                cc.log("当前点击坐标("+locationInNode.x +","+ locationInNode.y+")");
+                // cc.log("当前点击坐标("+locationInNode.x +","+ locationInNode.y+")");
                 _isDown = true;
-                _points.length = 1; // clear
-                _points[0] = new Point(locationInNode.x, locationInNode.y);
+
+                var len = gesture.InitPoint(locationInNode.x,locationInNode.y);
+                cc.log("the begin _points.lenth="+ len);
+                _isDown = true;
                 return true;
             },
             onTouchMoved: function (touch, event) {            // 触摸移动时触发
@@ -44,9 +42,7 @@ cc.Class({
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 if (_isDown)
                 {
-                    _points[_points.length] = new Point(locationInNode.x, locationInNode.y); // append
-                    cc.log("当前移动坐标("+locationInNode.x +","+ locationInNode.y+")");
-
+                   cc.log("the _points.lenth="+gesture.AddPoint(locationInNode.x,locationInNode.y));
                 }
 
             },
@@ -55,9 +51,10 @@ cc.Class({
                 if (_isDown)
                 {
                     _isDown = false;
-                    if (_points.length >= 10)
+                    if (gesture.GetPoints().length >= 10)
                     {
-                        var result = gesture.Recognize(_points, false);
+                    	cc.log("the _points.length = " + gesture.GetPoints().length + " , and will Recognize the gesture!")
+                        var result = gesture.Recognize(gesture.GetPoints(), 0);
                         cc.log("Result: " + result.Name);
                     }
                     else // fewer than 10 points were inputted

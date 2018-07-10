@@ -64,6 +64,8 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
+var _points = new Array();
+
 //
 // Point class
 //
@@ -144,6 +146,22 @@ function DollarRecognizer() // constructor
 	//
 	// The $1 Gesture Recognizer API begins here -- 3 methods: Recognize(), AddGesture(), and DeleteUserGestures()
 	//
+	this.InitPoint = function(x, y)
+	{
+		_points.length = 1;
+		_points[0] = new Point(x,y);
+		return _points.length;
+	}
+	this.AddPoint = function(x, y)
+	{
+		_points[_points.length] = new Point(x,y);
+		return _points.length;
+	}
+	this.GetPoints = function()
+	{
+		return _points;
+	}
+
 	this.Recognize = function(points, useProtractor)
 	{
 		var t0 = Date.now();
@@ -187,6 +205,8 @@ function DollarRecognizer() // constructor
 		return NumUnistrokes;
 	}
 }
+module.exports = DollarRecognizer;
+
 //
 // Private helper functions from here on down
 //
