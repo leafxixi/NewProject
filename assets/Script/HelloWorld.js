@@ -1,23 +1,26 @@
 var DollarRecognizer = require("gesture");
 var gesture = new DollarRecognizer();
 
+
+
 cc.Class({
     extends: cc.Component,
 
     properties: {
-        label: {
-            default: null,
-            type: cc.Label
-        },
-        // defaults, set visually when attaching this script to the Canvas
-        text: 'Hello, World!'
+
 
     },
+
+
     //事件监听
     setEventControl: function(){
         var self = this;
         var _isDown = false;
-		// var _points = new Array();
+
+        var graphics = this.getComponent(cc.Graphics);
+
+        var str = "";
+
         cc.eventManager.addListener({
         event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
@@ -31,8 +34,11 @@ cc.Class({
                 _isDown = true;
 
                 var len = gesture.InitPoint(locationInNode.x,locationInNode.y);
-                cc.log("the begin _points.lenth="+ len);
-                _isDown = true;
+                // cc.log("the begin _points.lenth="+ len);
+                str = "this.Unistrokes[] = new Unistroke("+", new Array(new Point("+parseInt(locationInNode.x)+","+parseInt(locationInNode.y)+")";
+                graphics.clear();
+                graphics.moveTo(locationInNode.x, locationInNode.y);
+
                 return true;
             },
             onTouchMoved: function (touch, event) {            // 触摸移动时触发
@@ -42,7 +48,10 @@ cc.Class({
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
                 if (_isDown)
                 {
-                   cc.log("the _points.lenth="+gesture.AddPoint(locationInNode.x,locationInNode.y));
+                	gesture.AddPoint(locationInNode.x,locationInNode.y);
+                	graphics.lineTo(locationInNode.x, locationInNode.y);
+                    graphics.stroke();
+                    str += ",new Point("+parseInt(locationInNode.x)+","+parseInt(locationInNode.y)+")";
                 }
 
             },
@@ -53,9 +62,18 @@ cc.Class({
                     _isDown = false;
                     if (gesture.GetPoints().length >= 10)
                     {
-                    	cc.log("the _points.length = " + gesture.GetPoints().length + " , and will Recognize the gesture!")
+                        str += "));";
+
+                        cc.log("集合: " + str);
+
+                    	// cc.log("the _points.length = " + gesture.GetPoints().length + " , and will Recognize the gesture!")
                         var result = gesture.Recognize(gesture.GetPoints(), 0);
+
                         cc.log("Result: " + result.Name);
+                        // gesture.AddGesture("test",gesture.GetPoints());
+
+
+                        
                     }
                     else // fewer than 10 points were inputted
                     {
@@ -68,7 +86,7 @@ cc.Class({
     },
     // use this for initialization
     onLoad: function () {
-        this.label.string = this.text;
+
         //触摸监听
         this.setEventControl();
     },
