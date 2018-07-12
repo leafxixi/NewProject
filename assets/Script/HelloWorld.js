@@ -19,7 +19,7 @@ cc.Class({
 
         var graphics = this.getComponent(cc.Graphics);
 
-        var str = "";
+        // var str = "";
 
         cc.eventManager.addListener({
         event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -30,15 +30,14 @@ cc.Class({
                 var target = event.getCurrentTarget();
                 // 获取事件所绑定的 target
                 var locationInNode = target.convertToNodeSpace(touch.getLocation());
-                // cc.log("当前点击坐标("+locationInNode.x +","+ locationInNode.y+")");
                 _isDown = true;
 
                 var len = gesture.InitPoint(locationInNode.x,locationInNode.y);
-                // cc.log("the begin _points.lenth="+ len);
-                str = "this.Unistrokes[] = new Unistroke("+", new Array(new Point("+parseInt(locationInNode.x)+","+parseInt(locationInNode.y)+")";
+                // str = "this.Unistrokes[] = new Unistroke("+", new Array(new Point("+parseInt(locationInNode.x)+","+parseInt(locationInNode.y)+")";
+                graphics.moveTo(0, 0);
                 graphics.clear();
+                graphics.circle(locationInNode.x, locationInNode.y, 2);
                 graphics.moveTo(locationInNode.x, locationInNode.y);
-
                 return true;
             },
             onTouchMoved: function (touch, event) {            // 触摸移动时触发
@@ -51,7 +50,7 @@ cc.Class({
                 	gesture.AddPoint(locationInNode.x,locationInNode.y);
                 	graphics.lineTo(locationInNode.x, locationInNode.y);
                     graphics.stroke();
-                    str += ",new Point("+parseInt(locationInNode.x)+","+parseInt(locationInNode.y)+")";
+                    // str += ",new Point("+parseInt(locationInNode.x)+","+parseInt(locationInNode.y)+")";
                 }
 
             },
@@ -60,24 +59,21 @@ cc.Class({
                 if (_isDown)
                 {
                     _isDown = false;
-                    if (gesture.GetPoints().length >= 10)
+                    if (gesture.GetPoints().length >= 7)
                     {
-                        str += "));";
+                        // str += "));";
 
-                        cc.log("集合: " + str);
-
-                    	// cc.log("the _points.length = " + gesture.GetPoints().length + " , and will Recognize the gesture!")
-                        var result = gesture.Recognize(gesture.GetPoints(), 0);
-
+                        // cc.log("集合: " + str);
+                    	var result = gesture.Recognize(gesture.GetPoints(), 0);
+                    	//判定手势操作
                         cc.log("Result: " + result.Name);
-                        // gesture.AddGesture("test",gesture.GetPoints());
-
-
                         
                     }
-                    else // fewer than 10 points were inputted
+                    else // fewer than 7 points were inputted
                     {
-                        cc.log("Too few points made. Please try again.");
+                    	//当无法Recognize时，判定为点击操作
+                        // cc.log("Too few points made. Please try again.");
+                        cc.log("Result: Tap");
                     }
                 }
             }
